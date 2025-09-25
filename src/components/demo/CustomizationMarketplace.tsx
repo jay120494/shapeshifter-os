@@ -47,6 +47,16 @@ interface CustomizationItem {
 const customizations: CustomizationItem[] = [
   // Themes
   {
+    id: 'base-theme',
+    name: 'Base Theme',
+    description: 'Clean default Mac OS light and dark mode',
+    cost: 0,
+    category: 'themes',
+    icon: Settings,
+    gradient: 'linear-gradient(135deg, #f8f9fa, #e9ecef)',
+    color: '#6c757d'
+  },
+  {
     id: 'mac-classic',
     name: 'Mac Classic',
     description: 'Original Mac OS vibes with modern touches',
@@ -165,6 +175,16 @@ const customizations: CustomizationItem[] = [
     gradient: 'linear-gradient(135deg, #FF375F, #FF3B30)',
     color: '#FF375F'
   },
+  {
+    id: 'light-temperature',
+    name: 'Light Temperature',
+    description: 'Automatic warm/cool lighting based on time of day',
+    cost: 25,
+    category: 'features',
+    icon: Sun,
+    gradient: 'linear-gradient(135deg, #FFD60A, #FF9F0A)',
+    color: '#FFD60A'
+  },
 
   // AI Features
   {
@@ -199,34 +219,45 @@ interface CustomizationMarketplaceProps {
 }
 
 export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMarketplaceProps) {
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set(['mac-classic']));
-  const [purchasedItems, setPurchasedItems] = useState<Set<string>>(new Set(['mac-classic']));
   const [activeTab, setActiveTab] = useState('themes');
-  const { credits, incCredits } = usePrefsStore();
+  const {
+    credits,
+    incCredits,
+    purchasedItems,
+    activeFeatures,
+    addPurchasedItem,
+    toggleFeature,
+    selectTheme,
+    hasPurchased,
+    isFeatureActive
+  } = usePrefsStore();
 
   const handlePurchase = (item: CustomizationItem) => {
     if (credits >= item.cost && !item.comingSoon) {
       incCredits(-item.cost);
-      setPurchasedItems(prev => new Set([...prev, item.id]));
-      setSelectedItems(prev => new Set([...prev, item.id]));
+      addPurchasedItem(item.id);
+      toggleFeature(item.id); // Activate immediately after purchase
     }
   };
 
-  const handleToggle = (itemId: string) => {
-    setSelectedItems(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(itemId)) {
-        newSet.delete(itemId);
-      } else {
-        newSet.add(itemId);
-      }
-      return newSet;
-    });
+  const handleToggle = (itemId: string, category: string) => {
+    if (category === 'themes') {
+      selectTheme(itemId);
+    } else {
+      toggleFeature(itemId);
+    }
   };
 
   const canPurchase = (item: CustomizationItem) => credits >= item.cost && !item.comingSoon;
-  const isOwned = (item: CustomizationItem) => purchasedItems.has(item.id);
-  const isActive = (item: CustomizationItem) => selectedItems.has(item.id);
+  const isOwned = (item: CustomizationItem) => hasPurchased(item.id);
+  const isActive = (item: CustomizationItem) => {
+    if (item.id === 'base-theme') {
+      // Base theme is active when no other themes are active
+      const themes = ['mac-classic', 'dark-elegance', 'neon-cyber'];
+      return !themes.some(theme => isFeatureActive(theme));
+    }
+    return isFeatureActive(item.id);
+  };
 
   const categoryItems = (category: string) => 
     customizations.filter(item => item.category === category);
@@ -381,7 +412,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
                                   {category !== 'ai' && (
                                     <Switch
                                       checked={active}
-                                      onCheckedChange={() => handleToggle(item.id)}
+                                      onCheckedChange={() => handleToggle(item.id, category)}
                                       disabled={item.comingSoon}
                                     />
                                   )}
@@ -453,7 +484,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="gap-1">
               <Star className="w-3 h-3" />
-              {Math.floor(selectedItems.size * 8.7)}/100 Satisfaction
+              {Math.floor(purchasedItems.size * 8.7)}/100 Satisfaction
             </Badge>
           </div>
         </div>

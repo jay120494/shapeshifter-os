@@ -6,29 +6,29 @@
 
 @layer base {
   :root {
-    /* Base Colors */
-    --background: 210 20% 98%;
-    --foreground: 220 13% 13%;
+    /* Mac OS Light Mode - Clean & Simple */
+    --background: 0 0% 100%;           /* Pure white background */
+    --foreground: 240 10% 9%;          /* Near black text */
 
-    --card: 0 0% 100%;
-    --card-foreground: 220 13% 13%;
+    --card: 0 0% 100%;                 /* White cards */
+    --card-foreground: 240 10% 9%;     /* Dark text on cards */
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 13%;
+    --popover-foreground: 240 10% 9%;
 
     /* Primary - Mac Blue */
-    --primary: 207 100% 50%;  /* #007AFF */
-    --primary-foreground: 210 40% 98%;
+    --primary: 207 100% 50%;           /* #007AFF - Mac blue */
+    --primary-foreground: 0 0% 100%;   /* White text on blue */
 
-    /* Secondary - Mac Gray */
-    --secondary: 240 2% 92%;
-    --secondary-foreground: 240 6% 56%;  /* #8E8E93 */
+    /* Secondary - Mac Light Gray */
+    --secondary: 240 5% 96%;           /* Light gray */
+    --secondary-foreground: 240 6% 20%; /* Dark gray text */
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 240 6% 56%;
+    --muted: 240 5% 96%;               /* Light gray muted */
+    --muted-foreground: 240 4% 46%;    /* Medium gray text */
 
-    --accent: 207 100% 50%;  /* Mac Blue */
-    --accent-foreground: 210 40% 98%;
+    --accent: 207 100% 50%;            /* Mac Blue */
+    --accent-foreground: 0 0% 100%;
 
     /* Mac Color Palette */
     --mac-blue: 207 100% 50%;    /* #007AFF */
@@ -40,12 +40,12 @@
     --mac-green: 146 77% 52%;    /* #32D74B */
     --mac-gray: 240 6% 56%;      /* #8E8E93 */
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 100% 59%;         /* Mac red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 221 83% 53%;
+    --border: 240 6% 90%;              /* Light border */
+    --input: 240 6% 95%;               /* Light input background */
+    --ring: 207 100% 50%;              /* Mac blue focus ring */
 
     --radius: 1rem;
 
@@ -94,48 +94,49 @@
   }
 
   .dark {
-    --background: 240 10% 4%;     /* Deeper dark */
-    --foreground: 0 0% 95%;
+    /* Mac OS Dark Mode - Clean & Simple */
+    --background: 240 6% 12%;          /* Slightly lighter dark background */
+    --foreground: 0 0% 92%;            /* Light text */
 
-    --card: 240 12% 12%;          /* Better contrast for cards */
-    --card-foreground: 0 0% 95%;
+    --card: 240 5% 16%;                /* Lighter dark cards */
+    --card-foreground: 0 0% 92%;       /* Light text on dark cards */
 
-    --popover: 240 8% 8%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 240 5% 16%;
+    --popover-foreground: 0 0% 92%;
 
-    --primary: 207 100% 50%;      /* Mac Blue remains vibrant */
-    --primary-foreground: 0 0% 100%;
+    --primary: 207 100% 60%;           /* Mac blue for dark mode */
+    --primary-foreground: 0 0% 100%;   /* White text on blue */
 
-    --secondary: 240 8% 12%;      /* Darker secondary */
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 240 4% 22%;           /* Lighter secondary */
+    --secondary-foreground: 0 0% 85%;  /* Light text */
 
-    --muted: 240 8% 12%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 240 4% 20%;               /* Lighter muted */
+    --muted-foreground: 240 5% 65%;    /* Better contrast text */
 
-    --accent: 207 100% 50%;       /* Mac Blue accent */
+    --accent: 207 100% 60%;            /* Mac Blue */
     --accent-foreground: 0 0% 100%;
 
-    /* Mac Colors remain the same for consistency */
-    --mac-blue: 207 100% 50%;
-    --mac-purple: 283 77% 55%;
-    --mac-pink: 348 100% 61%;
-    --mac-red: 4 100% 59%;
-    --mac-orange: 35 100% 52%;
-    --mac-yellow: 48 100% 52%;
-    --mac-green: 146 77% 52%;
-    --mac-gray: 240 6% 56%;
+    /* Mac Colors - optimal for dark mode */
+    --mac-blue: 207 100% 60%;
+    --mac-purple: 283 77% 65%;
+    --mac-pink: 348 100% 71%;
+    --mac-red: 4 100% 69%;
+    --mac-orange: 35 100% 62%;
+    --mac-yellow: 48 100% 62%;
+    --mac-green: 146 77% 62%;
+    --mac-gray: 240 6% 70%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 4 100% 67%;         /* Red for dark mode */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 27% 16%;
-    --input: 220 27% 16%;
-    --ring: 221 83% 53%;
+    --border: 240 4% 24%;              /* More visible border */
+    --input: 240 4% 20%;               /* Lighter input */
+    --ring: 207 100% 60%;              /* Blue focus ring */
 
     /* Dark mode Mac gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--mac-blue)), hsl(var(--mac-purple)));
-    --gradient-card: linear-gradient(145deg, hsl(240 12% 15%), hsl(240 12% 10%));
-    --gradient-subtle: linear-gradient(180deg, hsl(240 12% 14%), hsl(240 12% 12%));
+    --gradient-card: linear-gradient(145deg, hsl(240 5% 18%), hsl(240 5% 15%));
+    --gradient-subtle: linear-gradient(180deg, hsl(240 5% 19%), hsl(240 5% 17%));
     --gradient-success: linear-gradient(135deg, hsl(var(--mac-green)), hsl(146 60% 45%));
     --gradient-achievement: linear-gradient(135deg, hsl(var(--mac-yellow)), hsl(var(--mac-orange)));
     --gradient-interactive: linear-gradient(135deg, hsl(var(--mac-purple)), hsl(var(--mac-blue)));
@@ -184,18 +185,25 @@
     font-size: calc(1rem * var(--scale));
   }
 
-  /* Modern card styles */
+  /* Modern card styles - override shadcn card backgrounds */
   .card-gradient {
-    background: var(--gradient-card);
+    background: var(--gradient-card) !important;
     box-shadow: var(--shadow-card);
   }
 
   .hero-gradient {
-    background: var(--gradient-hero);
+    background: var(--gradient-hero) !important;
+  }
+
+  /* Special handling for text gradients */
+  .bg-clip-text.hero-gradient {
+    background: linear-gradient(135deg, #007AFF, #BF5AF2) !important;
+    -webkit-background-clip: text;
+    background-clip: text;
   }
 
   .subtle-gradient {
-    background: var(--gradient-subtle);
+    background: var(--gradient-subtle) !important;
   }
 
   /* Interactive elements */
@@ -240,7 +248,7 @@
   .bento-grid {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(10, minmax(120px, auto));
+    grid-template-rows: repeat(12, minmax(120px, auto));
     gap: 1rem;
   }
 
@@ -280,9 +288,32 @@
     grid-row: 5 / 7;
   }
 
+
   .bento-wellness {
-    grid-column: 1 / 13;
+    grid-column: 1 / 6;
     grid-row: 9 / 10;
+  }
+  .bento-extra {
+    grid-column: 6 / 13;
+    grid-row: 9 / 10;
+  }
+  .bento-delay {
+    grid-column: 1 / 9;
+    grid-row: 10 / 11;
+  }
+  .bento-ai {
+    grid-column: 9 / 13;
+    grid-row: 10 / 11;
+  }
+
+  .bento-pomodoro {
+    grid-column: 1 / 5;
+    grid-row: 11 / 12;
+  }
+
+  .bento-wellness-purchased {
+    grid-column: 5 / 9;
+    grid-row: 11 / 12;
   }
 
   /* Senior Mode Adjustments */
@@ -404,15 +435,30 @@
     animation: sparkle 1s ease-in-out infinite;
   }
 
+  /* Light Temperature Effects & Smooth scrolling */
+  html {
+    filter: var(--light-temperature-filter, none);
+    transition: filter 60s ease-in-out;
+    scroll-behavior: smooth;
+  }
+
+  html::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--light-temperature-overlay, transparent);
+    pointer-events: none;
+    z-index: -1;
+    transition: background 60s ease-in-out;
+  }
+
   /* Motion respect */
   @media (prefers-reduced-motion: reduce) {
     * {
       --motion: 0;
     }
-  }
-
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
   }
 }

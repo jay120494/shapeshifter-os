@@ -10,13 +10,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Clock, Check, Search } from 'lucide-react';
 import { usePrefsStore } from '@/store/prefsStore';
-import { workdayData, weekendData, SnippetData } from '@/data/seeds';
+import { getTimeAwareWorkdayData, getTimeAwareWeekendData, SnippetData } from '@/data/seeds';
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const { dayMode, profile } = usePrefsStore();
 
-  const currentData = dayMode === 'workday' ? workdayData : weekendData;
+  const currentData = dayMode === 'workday' ? getTimeAwareWorkdayData() : getTimeAwareWeekendData();
   const allSnippets = [
     ...currentData.today,
     ...currentData.patterns,

@@ -40,6 +40,7 @@ export function SnippetCard({
   const [isDismissing, setIsDismissing] = useState(false);
   const [showCreditsAnimation, setShowCreditsAnimation] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showHoverPreview, setShowHoverPreview] = useState(false);
   const { profile, zoomLevel, incrementCalm, incCredits, decrementTabs } = usePrefsStore();
   
   const handleDone = async () => {
@@ -79,6 +80,57 @@ export function SnippetCard({
   const isCompact = variant === 'compact' || variant === 'mini';
   const isSenior = profile === 'senior';
 
+  const getPreviewContent = () => {
+    if (!snippet.preview) return null;
+
+    return (
+      <div className="bg-background/95 backdrop-blur-sm border rounded-lg p-4 shadow-xl max-w-sm">
+        <div className="space-y-3">
+          {snippet.preview.details && (
+            <div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Details</div>
+              <div className="text-sm">{snippet.preview.details}</div>
+            </div>
+          )}
+
+          {snippet.preview.context && (
+            <div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Context</div>
+              <div className="text-sm text-muted-foreground">{snippet.preview.context}</div>
+            </div>
+          )}
+
+          {snippet.preview.metadata && Object.keys(snippet.preview.metadata).length > 0 && (
+            <div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Info</div>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {Object.entries(snippet.preview.metadata).map(([key, value]) => (
+                  <div key={key} className="flex justify-between">
+                    <span className="text-muted-foreground">{key}:</span>
+                    <span className="font-medium">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {snippet.preview.actions && snippet.preview.actions.length > 0 && (
+            <div>
+              <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Quick Actions</div>
+              <div className="flex flex-wrap gap-1">
+                {snippet.preview.actions.map((action, index) => (
+                  <Badge key={index} variant="secondary" className="text-xs">
+                    {action}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const getCardPadding = () => {
     switch (variant) {
       case 'featured':
@@ -110,6 +162,13 @@ export function SnippetCard({
         </div>
       )}
 
+      {/* Hover Preview */}
+      {showHoverPreview && snippet.preview && (
+        <div className="absolute bottom-full left-0 mb-2 z-20">
+          {getPreviewContent()}
+        </div>
+      )}
+
       <Card
         className={cn(
           "card-gradient interactive group relative transition-all duration-200",
@@ -121,6 +180,8 @@ export function SnippetCard({
           fontSize: `var(--zoom-text-base)`,
           padding: `var(--zoom-padding)`,
         } : undefined}
+        onMouseEnter={() => setShowHoverPreview(true)}
+        onMouseLeave={() => setShowHoverPreview(false)}
       >
         {/* Dismiss Button */}
         {onDismiss && (

@@ -27,7 +27,7 @@ export default function Landing() {
               ✨ Personal Web OS - Early Access
             </Badge>
             
-            <h1 className="text-hero font-bold tracking-tight mb-6 hero-gradient bg-clip-text text-transparent animate-fade-in">
+            <h1 className="text-hero font-bold tracking-tight mb-6 text-foreground animate-fade-in">
               Fewer tabs. Faster starts. Calmer days.
             </h1>
             

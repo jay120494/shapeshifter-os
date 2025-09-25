@@ -17,9 +17,43 @@ export interface SnippetData {
     senior?: { simplified_title?: string; extra_context?: string };
     power?: { shortcut?: string; estimated_time?: string };
   };
+  preview?: {
+    details?: string;
+    context?: string;
+    actions?: string[];
+    metadata?: { [key: string]: string };
+  };
 }
 
 const getFavicon = (domain: string) => `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+
+// Time-based helpers for dynamic timestamps
+const getTimeAgo = (minutes: number) => {
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days} days ago`;
+};
+
+const getCurrentTimeSlot = () => {
+  const hour = new Date().getHours();
+  if (hour < 9) return 'early';
+  if (hour < 12) return 'morning';
+  if (hour < 17) return 'afternoon';
+  return 'evening';
+};
+
+const getUrgencyScore = (timeSlot: string, category: string) => {
+  // Higher scores = more urgent for current time
+  const urgencyMatrix = {
+    early: { email: 3, calendar: 5, open_tab: 2 },
+    morning: { email: 5, calendar: 4, open_tab: 5 },
+    afternoon: { email: 4, calendar: 3, open_tab: 4 },
+    evening: { email: 2, calendar: 2, open_tab: 3 }
+  };
+  return urgencyMatrix[timeSlot as keyof typeof urgencyMatrix]?.[category as keyof typeof urgencyMatrix.early] || 3;
+};
 
 export const workdayData: Record<string, SnippetData[]> = {
   today: [
@@ -28,14 +62,14 @@ export const workdayData: Record<string, SnippetData[]> = {
       title: 'GitHub PR #247 - Authentication Bug Fix',
       source: 'Open Tab',
       url: '#',
-      excerpt: 'Been open for 3 hours - merge conflicts need resolution',
-      ts: 'Tab open 3h',
+      excerpt: `Been open for ${getTimeAgo(183)} - merge conflicts need resolution`,
+      ts: `Tab open ${getTimeAgo(183)}`,
       favicon: getFavicon('github.com'),
       category: 'today',
       priority: 'high',
       intelligence: {
         pattern: 'Usually review PRs at 9:30am',
-        prediction: 'High priority - blocking team deployment',
+        prediction: `${getCurrentTimeSlot() === 'morning' ? 'Perfect timing' : 'High priority'} - blocking team deployment`,
         source_type: 'open_tab'
       },
       persona_specific: {
@@ -47,6 +81,17 @@ export const workdayData: Record<string, SnippetData[]> = {
           shortcut: '⌘+1',
           estimated_time: '15 min'
         }
+      },
+      preview: {
+        details: '3 files changed: auth.js (12 lines), middleware.js (5 lines), tests.spec.js (8 lines)',
+        context: 'Fixes OAuth callback issue causing 401 errors for new user signups',
+        actions: ['Review changes', 'Run tests', 'Approve & merge'],
+        metadata: {
+          'Branch': 'fix/oauth-callback',
+          'Approvals': '2 of 2 required',
+          'Checks': 'All passing',
+          'Conflicts': 'auth.js line 34-37'
+        }
       }
     },
     {
@@ -54,14 +99,14 @@ export const workdayData: Record<string, SnippetData[]> = {
       title: '3 unread emails - 1 urgent from Sarah',
       source: 'Gmail',
       url: '#',
-      excerpt: 'Q4 roadmap needs your input by 2pm today',
-      ts: '2 new',
+      excerpt: `Q4 roadmap needs your input by ${getCurrentTimeSlot() === 'morning' ? '2pm today' : getCurrentTimeSlot() === 'afternoon' ? 'end of day' : 'tomorrow morning'}`,
+      ts: `${getTimeAgo(23)}`,
       favicon: getFavicon('gmail.com'),
       category: 'today',
       priority: 'high',
       intelligence: {
         pattern: 'Check email 2x daily',
-        prediction: 'Urgent response needed',
+        prediction: `${getCurrentTimeSlot() === 'morning' ? 'Good timing for response' : 'Urgent response needed'}`,
         source_type: 'email'
       },
       persona_specific: {
@@ -73,27 +118,38 @@ export const workdayData: Record<string, SnippetData[]> = {
           shortcut: '⌘+2',
           estimated_time: '5 min'
         }
+      },
+      preview: {
+        details: 'From: Sarah Mills (Product Director) • Subject: Q4 Roadmap Review - Need Your Input',
+        context: 'Budget allocation decisions, timeline concerns for mobile app launch, resource planning discussion',
+        actions: ['Reply with priorities', 'Schedule call', 'Review attached docs'],
+        metadata: {
+          'Thread': '4 messages',
+          'Attachments': '2 (Q4-Budget.xlsx, Timeline.pdf)',
+          'Cc': 'Mike Chen, Alex Rodriguez',
+          'Deadline': `${getCurrentTimeSlot() === 'morning' ? '2pm today' : 'end of day'}`
+        }
       }
     },
     {
       id: 'calendar-next',
-      title: 'Team standup in 15 minutes',
+      title: `Team standup ${getCurrentTimeSlot() === 'morning' ? 'in 15 minutes' : getCurrentTimeSlot() === 'afternoon' ? 'at 2:30 PM' : 'tomorrow 9:30 AM'}`,
       source: 'Calendar',
       url: '#',
       excerpt: 'Weekly sync with product team - prep: demo progress',
-      ts: '9:45 AM',
+      ts: getCurrentTimeSlot() === 'morning' ? '9:45 AM' : getCurrentTimeSlot() === 'afternoon' ? '2:30 PM today' : '9:30 AM tomorrow',
       favicon: getFavicon('calendar.google.com'),
       category: 'today',
-      priority: 'medium',
+      priority: getCurrentTimeSlot() === 'morning' ? 'high' : 'medium',
       intelligence: {
         pattern: 'Never missed a standup',
-        prediction: 'Time to prep talking points',
+        prediction: getCurrentTimeSlot() === 'morning' ? 'Time to prep talking points now!' : 'Time to prep talking points',
         source_type: 'calendar'
       },
       persona_specific: {
         senior: {
-          simplified_title: 'Team meeting starts soon',
-          extra_context: 'Join video call in 15 minutes'
+          simplified_title: getCurrentTimeSlot() === 'morning' ? 'Team meeting starts very soon' : 'Team meeting coming up',
+          extra_context: getCurrentTimeSlot() === 'morning' ? 'Join video call in 15 minutes' : 'Prepare for upcoming meeting'
         },
         power: {
           shortcut: '⌘+3',
@@ -107,9 +163,10 @@ export const workdayData: Record<string, SnippetData[]> = {
       source: 'Notion',
       url: '#',
       excerpt: 'New component variants and accessibility guidelines added',
-      ts: 'Yesterday',
+      ts: getTimeAgo(1435), // Yesterday
       favicon: getFavicon('notion.so'),
       category: 'today',
+      priority: getCurrentTimeSlot() === 'afternoon' ? 'medium' : 'low',
     },
     {
       id: 'slack-1',
@@ -117,9 +174,14 @@ export const workdayData: Record<string, SnippetData[]> = {
       source: 'Slack',
       url: '#',
       excerpt: '@you mentioned in #engineering - Docker optimization thread',
-      ts: '2 hours ago',
+      ts: getTimeAgo(127), // ~2 hours ago
       favicon: getFavicon('slack.com'),
       category: 'today',
+      intelligence: {
+        source_type: 'open_tab',
+        pattern: `Usually responds to Slack during ${getCurrentTimeSlot()}`,
+        prediction: getCurrentTimeSlot() === 'evening' ? 'Can wait until tomorrow' : 'Quick response expected'
+      },
     },
     {
       id: 'jira-1',
@@ -726,3 +788,37 @@ export const weekendData: Record<string, SnippetData[]> = {
     },
   ],
 };
+
+// Time-aware data processing functions
+export const getTimeAwarePriority = (snippet: SnippetData): number => {
+  const baseScore = snippet.priority === 'high' ? 10 : snippet.priority === 'medium' ? 5 : 1;
+  const timeSlot = getCurrentTimeSlot();
+  const urgencyBonus = snippet.intelligence?.source_type ?
+    getUrgencyScore(timeSlot, snippet.intelligence.source_type) : 0;
+
+  // Time decay - older items get lower priority
+  const tsText = snippet.ts;
+  let ageBonus = 0;
+  if (tsText.includes('min ago')) ageBonus = 3;
+  else if (tsText.includes('hour') || tsText.includes('h ago')) ageBonus = 2;
+  else if (tsText.includes('Yesterday') || tsText.includes('days ago')) ageBonus = -1;
+
+  return baseScore + urgencyBonus + ageBonus;
+};
+
+export const sortByTimeAwarePriority = (items: SnippetData[]): SnippetData[] => {
+  return [...items].sort((a, b) => getTimeAwarePriority(b) - getTimeAwarePriority(a));
+};
+
+// Export time-aware data
+export const getTimeAwareWorkdayData = (): Record<string, SnippetData[]> => ({
+  today: sortByTimeAwarePriority(workdayData.today),
+  patterns: workdayData.patterns,
+  snippets: workdayData.snippets
+});
+
+export const getTimeAwareWeekendData = (): Record<string, SnippetData[]> => ({
+  today: sortByTimeAwarePriority(weekendData.today),
+  patterns: weekendData.patterns,
+  snippets: weekendData.snippets
+});

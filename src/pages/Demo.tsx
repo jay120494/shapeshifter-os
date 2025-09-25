@@ -2,29 +2,36 @@ import { useState, useEffect } from 'react';
 import { Container } from '@/components/layout/Container';
 import { SecondaryTabBar } from '@/components/layout/SecondaryTabBar';
 import { ZoomSlider } from '@/components/demo/ZoomSlider';
+import { VoiceMockup } from '@/components/demo/VoiceMockup';
 import { useLayoutContext } from '@/components/layout/Layout';
 import { SnippetCard } from '@/components/demo/SnippetCard';
 import { TabsDigest } from '@/components/demo/TabsDigest';
 import { FocusMode } from '@/components/demo/FocusMode';
 import { WellnessTracker } from '@/components/demo/WellnessTracker';
+import { PersonaWidget } from '@/components/demo/PersonaWidget';
+import { ExpandableServiceWidget } from '@/components/demo/ExpandableServiceWidget';
+import { TabDelayWidget } from '@/components/demo/TabDelayWidget';
+import { AdaptiveIndicator } from '@/components/demo/AdaptiveIndicator';
+import { PomodoroWidget } from '@/components/demo/PomodoroWidget';
 import { CommandPalette } from '@/components/demo/CommandPalette';
 import { AssistDemo } from '@/components/demo/AssistDemo';
 import { KeyboardHelp } from '@/components/demo/KeyboardHelp';
 import { ThemeMarketplace } from '@/components/demo/ThemeMarketplace';
 import { CustomizationMarketplace } from '@/components/demo/CustomizationMarketplace';
+import { LightTemperature } from '@/components/demo/LightTemperature';
 import { usePrefsStore } from '@/store/prefsStore';
-import { workdayData, weekendData, SnippetData } from '@/data/seeds';
+import { getTimeAwareWorkdayData, getTimeAwareWeekendData, SnippetData } from '@/data/seeds';
 import { cn } from '@/lib/utils';
 
 export default function Demo() {
-  const { dayMode, profile, zoomLevel } = usePrefsStore();
+  const { dayMode, profile, zoomLevel, isFeatureActive } = usePrefsStore();
   const { setCustomizationsHandler, setThemesHandler } = useLayoutContext();
   const [completedSnippets, setCompletedSnippets] = useState<Set<string>>(new Set());
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
   const [showThemeMarketplace, setShowThemeMarketplace] = useState(false);
   const [showCustomizationMarketplace, setShowCustomizationMarketplace] = useState(false);
   
-  const currentData = dayMode === 'workday' ? workdayData : weekendData;
+  const currentData = dayMode === 'workday' ? getTimeAwareWorkdayData() : getTimeAwareWeekendData();
   const isSenior = profile === 'senior';
 
   // Set up header handlers
@@ -87,8 +94,10 @@ export default function Demo() {
 
   return (
     <div className="min-h-screen bg-background">
+      <LightTemperature />
       <SecondaryTabBar />
       <ZoomSlider />
+      <VoiceMockup />
       <Container size="full" className="py-6">
         <div
           className="space-y-6 transition-all duration-300"
@@ -97,20 +106,32 @@ export default function Demo() {
             gap: profile === 'senior' ? `var(--zoom-gap)` : undefined
           }}
         >
-          {/* Performance Metrics */}
+          {/* New Tab Simulation */}
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/30 border text-sm text-muted-foreground">
+              <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              shapeshifter://home • New Tab
+            </div>
+          </div>
+
+          {/* Performance Metrics & Tab Replacement Stats */}
           <div className="text-center">
             <div className="inline-flex items-center gap-6 px-6 py-3 rounded-xl bg-muted/30 border">
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">-34%</div>
-                <div className="text-xs text-muted-foreground">Time to First Action</div>
+                <div className="text-2xl font-bold text-green-600">47→7</div>
+                <div className="text-xs text-muted-foreground">Tabs Replaced</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">-27%</div>
-                <div className="text-xs text-muted-foreground">Tabs Reduced</div>
+                <div className="text-2xl font-bold text-blue-600">-34%</div>
+                <div className="text-xs text-muted-foreground">Time to Action</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-600">{profile === 'senior' ? '85%' : profile === 'power' ? '92%' : '79%'}</div>
-                <div className="text-xs text-muted-foreground">Task Completion</div>
+                <div className="text-xs text-muted-foreground">Focus Score</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-orange-600">3</div>
+                <div className="text-xs text-muted-foreground">Delayed Tabs</div>
               </div>
             </div>
           </div>
@@ -120,7 +141,7 @@ export default function Demo() {
             "bento-grid gap-4",
             isSenior ? "bento-grid-senior" : "bento-grid-default"
           )}>
-            
+
             {/* Hero Today Card */}
             <div className="bento-hero">
               <div className="card-gradient p-6 rounded-2xl h-full flex flex-col">
@@ -138,12 +159,12 @@ export default function Demo() {
                     {filterCompleted(currentData.today).length} tasks need your attention
                   </p>
                 </div>
-                
+
                 <div className="flex-1 space-y-3">
                   {filterCompleted(currentData.today).slice(0, isSenior ? 3 : 4).map((snippet, index) => (
-                    <SnippetCard 
-                      key={snippet.id} 
-                      snippet={snippet} 
+                    <SnippetCard
+                      key={snippet.id}
+                      snippet={snippet}
                       onDone={handleSnippetDone}
                       onDismiss={handleSnippetDismiss}
                       variant={index === 0 ? "featured" : "compact"}
@@ -154,9 +175,13 @@ export default function Demo() {
               </div>
             </div>
 
-            {/* Tabs Digest */}
+            {/* Expandable Gmail Widget */}
             <div className="bento-digest">
-              <TabsDigest />
+              <ExpandableServiceWidget
+                serviceType="gmail"
+                title="Gmail"
+                count={3}
+              />
             </div>
 
             {/* Patterns Grid */}
@@ -176,12 +201,12 @@ export default function Demo() {
                     Regular returns
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   {filterCompleted(currentData.patterns).slice(0, isSenior ? 4 : 6).map((snippet) => (
-                    <SnippetCard 
-                      key={snippet.id} 
-                      snippet={snippet} 
+                    <SnippetCard
+                      key={snippet.id}
+                      snippet={snippet}
                       onDone={handleSnippetDone}
                       onDismiss={handleSnippetDismiss}
                       variant="mini"
@@ -229,12 +254,12 @@ export default function Demo() {
                     Act without tabs
                   </p>
                 </div>
-                
+
                 <div className="space-y-2 max-h-96 overflow-y-auto">
                   {filterCompleted(currentData.snippets).slice(0, isSenior ? 8 : 12).map((snippet) => (
-                    <SnippetCard 
-                      key={snippet.id} 
-                      snippet={snippet} 
+                    <SnippetCard
+                      key={snippet.id}
+                      snippet={snippet}
                       onDone={handleSnippetDone}
                       onDismiss={handleSnippetDismiss}
                       variant="compact"
@@ -245,15 +270,51 @@ export default function Demo() {
               </div>
             </div>
 
-            {/* Focus Mode Widget */}
+            {/* YouTube Widget */}
             <div className="bento-weather">
-              <FocusMode />
+              <ExpandableServiceWidget
+                serviceType="youtube"
+                title="YouTube"
+                count={2}
+              />
             </div>
 
-            {/* Wellness Tracker Widget */}
+            {/* Default Widget */}
             <div className="bento-wellness">
-              <WellnessTracker />
+              <PersonaWidget />
             </div>
+
+            {/* Slack Widget */}
+            <div className="bento-extra">
+              <ExpandableServiceWidget
+                serviceType="slack"
+                title="Slack"
+                count={4}
+              />
+            </div>
+
+            {/* Tab Delay Widget */}
+            <div className="bento-delay">
+              <TabDelayWidget />
+            </div>
+
+            {/* AI Adaptation Indicator */}
+            <div className="bento-ai">
+              <AdaptiveIndicator />
+            </div>
+
+            {/* Purchased Widgets - Show only if active */}
+            {isFeatureActive('focus-mode') && (
+              <div className="bento-pomodoro">
+                <PomodoroWidget />
+              </div>
+            )}
+
+            {isFeatureActive('wellness-tracking') && (
+              <div className="bento-wellness-purchased">
+                <WellnessTracker />
+              </div>
+            )}
 
           </div>
 
