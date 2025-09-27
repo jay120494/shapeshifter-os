@@ -24,9 +24,13 @@ import {
   Heart,
   Star,
   Layers,
-  Settings
+  Settings,
+  Clock,
+  BookOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SKINS } from '@/data/skins';
+import { useThemeStore } from '@/store/themeStore';
 import { usePrefsStore } from '@/store/prefsStore';
 
 interface CustomizationItem {
@@ -87,6 +91,26 @@ const customizations: CustomizationItem[] = [
     color: '#ff0080',
     isPremium: true
   },
+  {
+    id: 'bao-garden',
+    name: '🌸 Bao Garden',
+    description: 'Serene Asian garden theme with cherry blossoms',
+    cost: 35,
+    category: 'themes',
+    icon: Sun,
+    gradient: 'linear-gradient(135deg, #FFB6C1, #FFA0C9, #87CEEB)',
+    color: '#FFB6C1'
+  },
+  {
+    id: 'dim-sum-delight',
+    name: '🥟 Dim Sum Delight',
+    description: 'Warm, cozy theme inspired by bamboo steamers',
+    cost: 40,
+    category: 'themes',
+    icon: Sun,
+    gradient: 'linear-gradient(135deg, #DEB887, #F4A460, #CD853F)',
+    color: '#DEB887'
+  },
 
   // Voice Modes
   {
@@ -120,6 +144,16 @@ const customizations: CustomizationItem[] = [
     gradient: 'linear-gradient(135deg, #FFD60A, #FF9F0A)',
     color: '#FFD60A'
   },
+  {
+    id: 'zen-kitchen-sounds',
+    name: '🎋 Zen Kitchen Sounds',
+    description: 'Soothing sounds of tea brewing, rice steaming, and bamboo',
+    cost: 35,
+    category: 'voices',
+    icon: Headphones,
+    gradient: 'linear-gradient(135deg, #8FBC8F, #87CEEB)',
+    color: '#8FBC8F'
+  },
 
   // Backgrounds
   {
@@ -141,6 +175,16 @@ const customizations: CustomizationItem[] = [
     icon: Sparkles,
     gradient: 'linear-gradient(135deg, #BF5AF2, #FF375F)',
     color: '#BF5AF2'
+  },
+  {
+    id: 'food-particles',
+    name: '🍃 Food Particles',
+    description: 'Floating tea leaves, rice grains, and cherry blossoms',
+    cost: 45,
+    category: 'backgrounds',
+    icon: Sparkles,
+    gradient: 'linear-gradient(135deg, #90EE90, #98FB98, #87CEEB)',
+    color: '#90EE90'
   },
 
   // Features
@@ -174,6 +218,26 @@ const customizations: CustomizationItem[] = [
     icon: Heart,
     gradient: 'linear-gradient(135deg, #FF375F, #FF3B30)',
     color: '#FF375F'
+  },
+  {
+    id: 'tea-timer',
+    name: '🍵 Tea Timer',
+    description: 'Perfect brewing timer for all tea types',
+    cost: 25,
+    category: 'features',
+    icon: Clock,
+    gradient: 'linear-gradient(135deg, #8FBC8F, #98FB98)',
+    color: '#8FBC8F'
+  },
+  {
+    id: 'recipe-snippets',
+    name: '🥢 Recipe Snippets',
+    description: 'Quick access to your favorite Asian recipes',
+    cost: 30,
+    category: 'features',
+    icon: BookOpen,
+    gradient: 'linear-gradient(135deg, #DEB887, #F4A460)',
+    color: '#DEB887'
   },
   {
     id: 'light-temperature',
@@ -213,6 +277,21 @@ const customizations: CustomizationItem[] = [
   }
 ];
 
+const SHOP_THEME_TO_SKIN: Record<string, string> = {
+  'base-theme': 'monochrome',
+  'mac-classic': 'sunrise',
+  'dark-elegance': 'midnight',
+  'neon-cyber': 'high-contrast-pro',
+  'bao-garden': 'bao-garden',
+  'dim-sum-delight': 'dim-sum-delight'
+};
+
+const themeFeatureIds = customizations
+  .filter(item => item.category === 'themes' && item.id !== 'base-theme')
+  .map(item => item.id);
+
+const skinLookup = new Map(SKINS.map((skin) => [skin.id, skin] as const));
+
 interface CustomizationMarketplaceProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -221,8 +300,8 @@ interface CustomizationMarketplaceProps {
 export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMarketplaceProps) {
   const [activeTab, setActiveTab] = useState('themes');
   const {
-    credits,
-    incCredits,
+    lychees,
+    incLychees,
     purchasedItems,
     activeFeatures,
     addPurchasedItem,
@@ -232,29 +311,51 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
     isFeatureActive
   } = usePrefsStore();
 
+  const { applyTheme, setActiveTheme } = useThemeStore();
+
   const handlePurchase = (item: CustomizationItem) => {
-    if (credits >= item.cost && !item.comingSoon) {
-      incCredits(-item.cost);
+    if (lychees >= item.cost && !item.comingSoon) {
+      incLychees(-item.cost);
       addPurchasedItem(item.id);
-      toggleFeature(item.id); // Activate immediately after purchase
+
+      if (item.category === 'themes') {
+        selectTheme(item.id);
+        const skinId = SHOP_THEME_TO_SKIN[item.id] ?? 'monochrome';
+        const skin = skinLookup.get(skinId);
+
+        if (skin) {
+          setActiveTheme(skin.id);
+          applyTheme(skin);
+        }
+      } else {
+        toggleFeature(item.id); // Activate immediately after purchase
+      }
     }
   };
 
-  const handleToggle = (itemId: string, category: string) => {
+  const handleToggle = (itemId: string, category: CustomizationItem['category'], nextChecked = true) => {
     if (category === 'themes') {
-      selectTheme(itemId);
+      const targetThemeId = nextChecked ? itemId : 'base-theme';
+      selectTheme(targetThemeId);
+
+      const skinId = SHOP_THEME_TO_SKIN[targetThemeId] ?? 'monochrome';
+      const skin = skinLookup.get(skinId);
+
+      if (skin) {
+        setActiveTheme(skin.id);
+        applyTheme(skin);
+      }
     } else {
       toggleFeature(itemId);
     }
   };
 
-  const canPurchase = (item: CustomizationItem) => credits >= item.cost && !item.comingSoon;
+  const canPurchase = (item: CustomizationItem) => lychees >= item.cost && !item.comingSoon;
   const isOwned = (item: CustomizationItem) => hasPurchased(item.id);
   const isActive = (item: CustomizationItem) => {
     if (item.id === 'base-theme') {
       // Base theme is active when no other themes are active
-      const themes = ['mac-classic', 'dark-elegance', 'neon-cyber'];
-      return !themes.some(theme => isFeatureActive(theme));
+      return !themeFeatureIds.some(theme => isFeatureActive(theme));
     }
     return isFeatureActive(item.id);
   };
@@ -285,7 +386,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-mac-yellow" />
-                <span className="font-semibold">{credits} Credits</span>
+                <span className="font-semibold">{lychees} Lychees 🍇</span>
               </div>
               <Badge variant="outline" className="gap-1">
                 <Crown className="w-3 h-3" />
@@ -412,7 +513,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
                                   {category !== 'ai' && (
                                     <Switch
                                       checked={active}
-                                      onCheckedChange={() => handleToggle(item.id, category)}
+                                      onCheckedChange={(checked) => handleToggle(item.id, category, checked)}
                                       disabled={item.comingSoon}
                                     />
                                   )}
@@ -432,7 +533,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
                                 >
                                   {item.comingSoon ? 'Coming Soon' :
                                    item.cost === 0 ? 'Get Free' :
-                                   affordable ? 'Purchase' : 'Need More Credits'}
+                                   affordable ? 'Purchase' : 'Need More Lychees'}
                                 </Button>
                               )}
                             </div>
@@ -479,7 +580,7 @@ export function CustomizationMarketplace({ open, onOpenChange }: CustomizationMa
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Zap className="w-4 h-4" />
-            <span>Earn credits by completing tasks, closing tabs, and daily usage!</span>
+            <span>Earn lychees by completing tasks, closing tabs, and daily usage!</span>
           </div>
           <div className="flex items-center gap-2">
             <Badge variant="outline" className="gap-1">

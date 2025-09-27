@@ -24,7 +24,7 @@ export function WellnessTracker() {
     recommendedBreak: '5 min walk'
   });
   const [lastBreak, setLastBreak] = useState(Date.now() - 45 * 60 * 1000); // 45 mins ago
-  const { profile, incCredits, incrementCalm } = usePrefsStore();
+  const { profile, incLychees, incrementCalm } = usePrefsStore();
 
   const isSenior = profile === 'senior';
 
@@ -49,7 +49,7 @@ export function WellnessTracker() {
       eyeStrain: Math.max(0, prev.eyeStrain - 15),
       breaksDue: Math.max(0, prev.breaksDue - 1)
     }));
-    incCredits(5);
+    incLychees(5);
     incrementCalm();
   };
 
@@ -156,7 +156,7 @@ export function WellnessTracker() {
           <Coffee className="w-4 h-4 mr-2" />
           Take Wellness Break
           <Badge variant="secondary" className="ml-2">
-            +5 Credits
+            +5 Lychees 🍇
           </Badge>
         </Button>
 

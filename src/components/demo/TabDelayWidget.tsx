@@ -60,7 +60,7 @@ const mockDelayedTabs: DelayedTab[] = [
 export function TabDelayWidget() {
   const [delayedTabs, setDelayedTabs] = useState<DelayedTab[]>(mockDelayedTabs);
   const [isExpanded, setIsExpanded] = useState(false);
-  const { profile, incCredits } = usePrefsStore();
+  const { profile, incLychees } = usePrefsStore();
 
   const formatTimeUntil = (date: Date): string => {
     const now = new Date();
@@ -76,7 +76,7 @@ export function TabDelayWidget() {
 
   const restoreTab = (id: string) => {
     setDelayedTabs(prev => prev.filter(tab => tab.id !== id));
-    incCredits(1);
+    incLychees(1);
   };
 
   const delayLonger = (id: string, additionalHours: number) => {
@@ -85,12 +85,12 @@ export function TabDelayWidget() {
         ? { ...tab, delayUntil: new Date(tab.delayUntil.getTime() + additionalHours * 60 * 60 * 1000) }
         : tab
     ));
-    incCredits(1);
+    incLychees(1);
   };
 
   const removeTab = (id: string) => {
     setDelayedTabs(prev => prev.filter(tab => tab.id !== id));
-    incCredits(2);
+    incLychees(2);
   };
 
   const getPriorityColor = (priority: DelayedTab['priority']) => {

@@ -22,7 +22,7 @@ export function PomodoroWidget() {
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [isBreak, setIsBreak] = useState(false);
   const [completedPomodoros, setCompletedPomodoros] = useState(2);
-  const { profile, incCredits, incrementCalm } = usePrefsStore();
+  const { profile, incLychees, incrementCalm } = usePrefsStore();
 
   const workDuration = 25 * 60; // 25 minutes
   const breakDuration = 5 * 60; // 5 minutes
@@ -40,7 +40,7 @@ export function PomodoroWidget() {
               setState('break');
               setIsBreak(true);
               setTimeLeft(breakDuration);
-              incCredits(10);
+              incLychees(10);
               incrementCalm();
               return breakDuration;
             } else {
@@ -59,7 +59,7 @@ export function PomodoroWidget() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [state, incCredits, incrementCalm]);
+  }, [state, incLychees, incrementCalm]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -207,7 +207,7 @@ export function PomodoroWidget() {
         {state === 'idle' && (
           <div className="mt-3 text-center">
             <div className="text-xs text-muted-foreground">
-              💡 25 min focus + 5 min break • Earn 10 credits per session
+              🍵 25 min like steeping tea + 5 min sip break • Earn 10 lychees 🍇 per session
             </div>
           </div>
         )}

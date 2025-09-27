@@ -4,9 +4,9 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface LayoutContextType {
   onOpenCustomizations?: () => void;
-  onOpenThemes?: () => void;
+  onOpenSkins?: () => void;
   setCustomizationsHandler: (handler: () => void) => void;
-  setThemesHandler: (handler: () => void) => void;
+  setSkinsHandler: (handler: () => void) => void;
 }
 
 const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
@@ -25,21 +25,21 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [onOpenCustomizations, setOnOpenCustomizations] = useState<(() => void) | undefined>();
-  const [onOpenThemes, setOnOpenThemes] = useState<(() => void) | undefined>();
+  const [onOpenSkins, setOnOpenSkins] = useState<(() => void) | undefined>();
 
   const setCustomizationsHandler = (handler: () => void) => {
     setOnOpenCustomizations(() => handler);
   };
 
-  const setThemesHandler = (handler: () => void) => {
-    setOnOpenThemes(() => handler);
+  const setSkinsHandler = (handler: () => void) => {
+    setOnOpenSkins(() => handler);
   };
 
   const contextValue: LayoutContextType = {
     onOpenCustomizations,
-    onOpenThemes,
+    onOpenSkins,
     setCustomizationsHandler,
-    setThemesHandler,
+    setSkinsHandler,
   };
 
   return (
@@ -47,7 +47,7 @@ export function Layout({ children }: LayoutProps) {
       <div className="min-h-screen bg-background">
         <Header
           onOpenCustomizations={onOpenCustomizations}
-          onOpenThemes={onOpenThemes}
+          onOpenSkins={onOpenSkins}
         />
         <main>{children}</main>
       </div>

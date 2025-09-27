@@ -41,7 +41,7 @@ export function SnippetCard({
   const [showCreditsAnimation, setShowCreditsAnimation] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showHoverPreview, setShowHoverPreview] = useState(false);
-  const { profile, zoomLevel, incrementCalm, incCredits, decrementTabs } = usePrefsStore();
+  const { profile, zoomLevel, incrementCalm, incLychees, decrementTabs } = usePrefsStore();
   
   const handleDone = async () => {
     setIsCompleting(true);
@@ -51,8 +51,8 @@ export function SnippetCard({
     
     // Enhanced rewards based on variant
     incrementCalm();
-    const creditAmount = variant === 'featured' ? 3 : variant === 'compact' ? 1 : 2;
-    incCredits(creditAmount);
+    const lycheeAmount = variant === 'featured' ? 3 : variant === 'compact' ? 1 : 2;
+    incLychees(lycheeAmount);
     decrementTabs(1);
     
     // Show rewards animations
@@ -62,7 +62,7 @@ export function SnippetCard({
     }
     
     // Show confetti for featured cards or high-value actions
-    if (variant === 'featured' || creditAmount >= 3) {
+    if (variant === 'featured' || lycheeAmount >= 3) {
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 1000);
     }

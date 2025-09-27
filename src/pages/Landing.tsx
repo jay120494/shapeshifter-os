@@ -244,7 +244,7 @@ export default function Landing() {
             </div>
 
             <Card className="card-gradient p-8">
-              <h3 className="text-xl font-semibold mb-4">Phase 2: Shapeshifter Assist</h3>
+              <h3 className="text-xl font-semibold mb-4">Phase 2: Bao Assist</h3>
               <p className="text-muted-foreground mb-6">
                 Coming soon - AI that adapts forms and interfaces to your needs without touching sensitive data.
               </p>

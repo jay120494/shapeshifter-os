@@ -1,6 +1,7 @@
+import { useState } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Sun,
@@ -18,18 +19,67 @@ import { cn } from '@/lib/utils';
 
 interface HeaderProps {
   onOpenCustomizations?: () => void;
-  onOpenThemes?: () => void;
+  onOpenSkins?: () => void;
 }
 
-export function Header({ onOpenCustomizations, onOpenThemes }: HeaderProps = {}) {
+function BaoWordmark() {
+  const [steaming, setSteaming] = useState(false);
+
+  const activateSteam = () => {
+    setSteaming(true);
+    window.setTimeout(() => setSteaming(false), 1200);
+  };
+
+  const triggerSteam = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    activateSteam();
+  };
+
+  return (
+    <>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Animate bao logo steam"
+        onClick={triggerSteam}
+        onKeyDown={(event: KeyboardEvent<HTMLDivElement>) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            event.stopPropagation();
+            activateSteam();
+          }
+        }}
+        className={cn(
+          'bao-logo relative h-8 w-8 rounded-lg bg-gradient-hero flex items-center justify-center cursor-pointer select-none',
+          steaming && 'bao-logo-active'
+        )}
+      >
+        <div className="bao-bun" />
+        {steaming && (
+          <div className="bao-steam-container">
+            <span className="bao-steam-line" />
+            <span className="bao-steam-line delay" />
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span className="font-bold text-lg leading-none">Bao OS</span>
+        <span className="text-xs text-muted-foreground leading-none">by Lychee Labs</span>
+      </div>
+    </>
+  );
+}
+
+export function Header({ onOpenCustomizations, onOpenSkins }: HeaderProps = {}) {
   const location = useLocation();
   const isDemo = location.pathname === '/demo';
   const { theme, setTheme } = useTheme();
-  const { 
-    credits, 
-    profile, 
-    dayMode, 
-    calmScore, 
+  const {
+    lychees,
+    profile,
+    dayMode,
+    calmScore,
     openTabs,
     setProfile,
     setDayMode
@@ -42,13 +92,7 @@ export function Header({ onOpenCustomizations, onOpenThemes }: HeaderProps = {})
           <div className="flex h-16 items-center justify-between">
             {/* Left: Logo */}
             <Link to="/" className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-hero flex items-center justify-center">
-                <Sparkles className="text-white w-5 h-5" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold text-lg leading-none">Shapeshifter OS</span>
-                <span className="text-xs text-muted-foreground leading-none">Living Interface</span>
-              </div>
+              <BaoWordmark />
             </Link>
 
             {/* Center: Navigation */}
@@ -101,22 +145,22 @@ export function Header({ onOpenCustomizations, onOpenThemes }: HeaderProps = {})
 
               {isDemo && (
                 <>
-                  {/* Themes and Shop (grouped) */}
+                  {/* Skins and Shop (grouped) */}
                   <div className="flex items-center space-x-2">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={onOpenThemes}
+                          onClick={onOpenSkins}
                           className="gap-2"
                         >
                           <Palette className="w-4 h-4" />
-                          <span className="hidden sm:inline">Themes</span>
+                          <span className="hidden sm:inline">Skins</span>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Browse and apply visual themes</p>
+                        <p>Browse and apply visual skins</p>
                       </TooltipContent>
                     </Tooltip>
 
@@ -143,12 +187,12 @@ export function Header({ onOpenCustomizations, onOpenThemes }: HeaderProps = {})
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <div className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-gradient-achievement text-white text-sm font-medium cursor-pointer">
-                          <Sparkles className="w-3 h-3" />
-                          <span>{credits}</span>
+                          🍇
+                          <span>{lychees}</span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Credits earned by interacting with the interface - use them to buy customization features</p>
+                        <p>Lychees earned by interacting with the interface - use them to buy customization features</p>
                       </TooltipContent>
                     </Tooltip>
 

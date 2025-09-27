@@ -16,7 +16,7 @@ const mockTabs = [
 
 export function TabsDigest() {
   const [isClosing, setIsClosing] = useState(false);
-  const { openTabs, decrementTabs, incrementCalm, incCredits, profile } = usePrefsStore();
+  const { openTabs, decrementTabs, incrementCalm, incLychees, profile } = usePrefsStore();
 
   const handleBulkClose = async () => {
     setIsClosing(true);
@@ -27,7 +27,7 @@ export function TabsDigest() {
     // Update metrics with confetti-like animation
     decrementTabs(5);
     incrementCalm();
-    incCredits(5);
+    incLychees(5);
     
     setIsClosing(false);
   };
@@ -109,7 +109,7 @@ export function TabsDigest() {
           <div className="mt-2 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
               <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary border-t-transparent"></div>
-              Organizing your digital space...
+              Tidying up like a zen kitchen... 🍃
             </div>
           </div>
         )}

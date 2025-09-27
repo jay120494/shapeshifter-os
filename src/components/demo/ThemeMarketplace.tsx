@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,74 +6,36 @@ import { Badge } from '@/components/ui/badge';
 import { Palette, Crown, Zap, Moon, Sun, Sparkles, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePrefsStore } from '@/store/prefsStore';
-import { useThemeStore, CustomTheme } from '@/store/themeStore';
+import { useThemeStore } from '@/store/themeStore';
+import type { CustomTheme } from '@/store/themeStore';
+import { SKINS } from '@/data/skins';
 
-const themes: CustomTheme[] = [
-  {
-    id: 'monochrome',
-    name: 'Monochrome',
-    description: 'Clean, minimal black and white aesthetic',
-    cost: 0,
-    colors: {
-      primary: '#007AFF',
-      secondary: '#8E8E93',
-      background: '#ffffff',
-      accent: '#007AFF'
-    },
-    gradient: 'linear-gradient(135deg, #000000, #333333)',
-    category: 'free'
-  },
-  {
-    id: 'sunrise',
-    name: 'Sunrise',
-    description: 'Warm oranges and pinks for morning productivity',
-    cost: 25,
-    colors: {
-      primary: '#ff6b35',
-      secondary: '#ffaa00',
-      background: '#fff8f0',
-      accent: '#ff8c42'
-    },
-    gradient: 'linear-gradient(135deg, #ff6b35, #ffaa00, #ff8c42)',
-    category: 'premium'
-  },
-  {
-    id: 'midnight',
-    name: 'Midnight',
-    description: 'Deep blues and purples for focus',
-    cost: 30,
-    colors: {
-      primary: '#1a365d',
-      secondary: '#553c9a',
-      background: '#0f1419',
-      accent: '#4299e1'
-    },
-    gradient: 'linear-gradient(135deg, #1a365d, #553c9a, #4299e1)',
-    category: 'premium'
-  },
-  {
-    id: 'high-contrast-pro',
-    name: 'High-Contrast Pro',
-    description: 'Maximum accessibility with vibrant highlights',
-    cost: 50,
-    colors: {
-      primary: '#00ff00',
-      secondary: '#ffff00',
-      background: '#000000',
-      accent: '#ff00ff'
-    },
-    gradient: 'linear-gradient(135deg, #00ff00, #ffff00, #ff00ff)',
-    category: 'pro'
+const themes = SKINS;
+
+const iconForSkin = (id: string) => {
+  switch (id) {
+    case "sunrise":
+      return Sun;
+    case "midnight":
+      return Moon;
+    case "high-contrast-pro":
+      return Crown;
+    case "bao-garden":
+      return Sparkles;
+    case "dim-sum-delight":
+      return Palette;
+    default:
+      return Palette;
   }
-];
+};
 
-interface ThemeMarketplaceProps {
+interface SkinGalleryProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) {
-  const { credits, incCredits } = usePrefsStore();
+export function SkinGallery({ open, onOpenChange }: SkinGalleryProps) {
+  const { lychees, incLychees } = usePrefsStore();
   const { 
     activeTheme, 
     purchasedThemes, 
@@ -84,8 +46,8 @@ export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) 
   } = useThemeStore();
 
   const handlePurchase = (theme: CustomTheme) => {
-    if (credits >= theme.cost) {
-      incCredits(-theme.cost);
+    if (lychees >= theme.cost) {
+      incLychees(-theme.cost);
       purchaseTheme(theme);
       applyTheme(theme);
     }
@@ -96,7 +58,7 @@ export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) 
     applyTheme(theme);
   };
 
-  const canPurchase = (theme: CustomTheme) => credits >= theme.cost;
+  const canPurchase = (theme: CustomTheme) => lychees >= theme.cost;
   const isOwned = (theme: CustomTheme) => isPurchased(theme.id);
   const isActive = (theme: CustomTheme) => activeTheme === theme.id;
 
@@ -115,11 +77,11 @@ export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) 
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
               <Palette className="w-5 h-5" />
-              Theme Marketplace
+              Skin Gallery
             </DialogTitle>
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500" />
-              <span className="font-semibold">{credits} Credits</span>
+              <span className="font-semibold">{lychees} Lychees</span>
             </div>
           </div>
         </DialogHeader>
@@ -223,7 +185,7 @@ export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) 
                           }}
                         >
                           {theme.cost === 0 ? 'Select' : 
-                           affordable ? 'Purchase' : 'Need More Credits'}
+                           affordable ? 'Purchase' : 'Need More Lychees'}
                         </Button>
                       )}
                     </div>
@@ -237,7 +199,7 @@ export function ThemeMarketplace({ open, onOpenChange }: ThemeMarketplaceProps) 
         <div className="mt-4 p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Zap className="w-4 h-4" />
-            <span>Earn more credits by completing tasks and closing tabs!</span>
+            <span>Earn more lychees by completing tasks and closing tabs!</span>
           </div>
         </div>
       </DialogContent>

@@ -168,8 +168,8 @@ const mockData: ServiceData = {
 };
 
 export function ExpandableServiceWidget({ serviceType, title, count, className }: Props) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const { profile, incCredits } = usePrefsStore();
+  const [isExpanded, setIsExpanded] = useState(true);
+  const { profile, incLychees } = usePrefsStore();
 
   const getIcon = () => {
     switch (serviceType) {
@@ -181,7 +181,7 @@ export function ExpandableServiceWidget({ serviceType, title, count, className }
   };
 
   const handleAction = (action: string) => {
-    incCredits(1);
+    incLychees(1);
     console.log(`Action: ${action}`);
   };
 

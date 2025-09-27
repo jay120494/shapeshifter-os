@@ -8,14 +8,14 @@ import { usePrefsStore } from '@/store/prefsStore';
 import { cn } from '@/lib/utils';
 
 export function PersonaWidget() {
-  const { profile, incCredits } = usePrefsStore();
+  const { profile, incLychees } = usePrefsStore();
   const [gameProgress, setGameProgress] = useState(65);
   const [gamesPlayed, setGamesPlayed] = useState(3);
 
   const playGame = () => {
     setGamesPlayed(prev => prev + 1);
     setGameProgress(prev => Math.min(100, prev + 15));
-    incCredits(2);
+    incLychees(2);
   };
 
   if (profile === 'senior') {

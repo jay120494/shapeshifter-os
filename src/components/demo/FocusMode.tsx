@@ -13,7 +13,7 @@ export function FocusMode() {
   const [focusTimer, setFocusTimer] = useState(25 * 60); // 25 minutes
   const [sessionProgress, setSessionProgress] = useState(0);
   const [blockedNotifications, setBlockedNotifications] = useState(0);
-  const { incCredits, incrementCalm, profile } = usePrefsStore();
+  const { incLychees, incrementCalm, profile } = usePrefsStore();
 
   const isSenior = profile === 'senior';
 
@@ -31,7 +31,7 @@ export function FocusMode() {
       }, 1000);
     } else if (focusTimer === 0 && focusEnabled) {
       // Session completed
-      incCredits(15);
+      incLychees(15);
       incrementCalm();
       setFocusEnabled(false);
       setFocusTimer(25 * 60);
@@ -39,7 +39,7 @@ export function FocusMode() {
     }
     
     return () => clearInterval(interval);
-  }, [focusEnabled, focusTimer, incCredits, incrementCalm]);
+  }, [focusEnabled, focusTimer, incLychees, incrementCalm]);
 
   const startFocusSession = () => {
     setFocusEnabled(true);
@@ -143,7 +143,7 @@ export function FocusMode() {
                 <span>Reward</span>
                 <Badge variant="outline" className="gap-1">
                   <Zap className="w-3 h-3" />
-                  +15 Credits
+                  +15 Lychees 🍇
                 </Badge>
               </div>
             </div>

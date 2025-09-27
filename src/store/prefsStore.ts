@@ -8,15 +8,17 @@ interface PrefsState {
   profile: Profile;
   dayMode: DayMode;
   calmScore: number;
-  credits: number;
+  lychees: number;
   openTabs: number;
   zoomLevel: number;
   purchasedItems: Set<string>;
   activeFeatures: Set<string>;
+  fortuneCookiesEarned: number;
   setProfile: (profile: Profile) => void;
   setDayMode: (dayMode: DayMode) => void;
   setCalmScore: (score: number) => void;
-  incCredits: (amount: number) => void;
+  incLychees: (amount: number) => void;
+  useFortuneCookie: () => void;
   setOpenTabs: (count: number) => void;
   setZoomLevel: (zoom: number) => void;
   incrementCalm: () => void;
@@ -34,11 +36,12 @@ export const usePrefsStore = create<PrefsState>()(
       profile: 'default',
       dayMode: 'workday',
       calmScore: 42,
-      credits: 127,
+      lychees: 127,
       openTabs: 23,
       zoomLevel: 1.0,
       purchasedItems: new Set(['base-theme', 'mac-classic']),
       activeFeatures: new Set([]),
+      fortuneCookiesEarned: 0,
       setProfile: (profile) => {
         set({ profile });
         // Auto-set zoom for senior mode
@@ -54,7 +57,13 @@ export const usePrefsStore = create<PrefsState>()(
       },
       setDayMode: (dayMode) => set({ dayMode }),
       setCalmScore: (score) => set({ calmScore: score }),
-      incCredits: (amount) => set((state) => ({ credits: state.credits + amount })),
+      incLychees: (amount) => set((state) => {
+        const newLychees = state.lychees + amount;
+        return { lychees: newLychees };
+      }),
+      useFortuneCookie: () => set((state) => ({
+        fortuneCookiesEarned: state.fortuneCookiesEarned + 1
+      })),
       setOpenTabs: (count) => set({ openTabs: count }),
       setZoomLevel: (zoom) => set({ zoomLevel: zoom }),
       incrementCalm: () => set((state) => ({ calmScore: state.calmScore + 1 })),

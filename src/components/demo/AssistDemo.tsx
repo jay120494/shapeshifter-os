@@ -57,7 +57,7 @@ export function AssistDemo() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-xl font-bold flex items-center gap-2">
               <Wand2 className="w-6 h-6 text-amber-600" />
-              Shapeshifter Assist Demo
+              Bao Assist Demo
             </CardTitle>
             <Badge variant="secondary" className="bg-amber-100 text-amber-800">
               Phase 2 Preview

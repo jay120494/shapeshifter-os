@@ -54,10 +54,15 @@
     --contrast: 1.0;
     --density: 1.0;
     --motion: 1;
+    --zoom-card-min-width: 280px;
+    --zoom-auto-rows: 220px;
+    --zoom-grid-columns: 3;
+    --senior-zoom: 1.2;
 
     /* Mac-inspired Gradients */
     --gradient-hero: linear-gradient(135deg, hsl(var(--mac-blue)), hsl(var(--mac-purple)));
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(210 20% 98%));
+    --app-background-image: none;
     --gradient-subtle: linear-gradient(180deg, hsl(210 40% 98%), hsl(210 40% 96%));
     --gradient-success: linear-gradient(135deg, hsl(var(--mac-green)), hsl(146 60% 45%));
     --gradient-achievement: linear-gradient(135deg, hsl(var(--mac-yellow)), hsl(var(--mac-orange)));
@@ -183,6 +188,70 @@
   body {
     @apply bg-background text-foreground transition-all duration-300;
     font-size: calc(1rem * var(--scale));
+    background-image: var(--app-background-image, none);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  body[data-background] .demo-surface {
+    background-color: hsl(var(--background) / 0.9);
+    backdrop-filter: blur(12px);
+    transition: background-color 0.4s ease, backdrop-filter 0.4s ease;
+  }
+
+  body[data-background='food'] {
+    --app-background-image:
+      radial-gradient(circle at 20% 15%, rgba(255, 196, 164, 0.25) 0, transparent 60%),
+      radial-gradient(circle at 80% 25%, rgba(234, 179, 199, 0.2) 0, transparent 55%),
+      linear-gradient(135deg, rgba(255, 240, 229, 0.95), rgba(255, 228, 196, 0.85));
+  }
+
+  body[data-background='particles'] {
+    --app-background-image:
+      radial-gradient(circle at 10% 10%, rgba(125, 211, 252, 0.25) 0, transparent 55%),
+      radial-gradient(circle at 75% 30%, rgba(196, 181, 253, 0.25) 0, transparent 60%),
+      linear-gradient(135deg, rgba(30, 64, 175, 0.85), rgba(8, 145, 178, 0.78));
+    background-size: 180% 180%;
+    animation: particle-drift 24s ease-in-out infinite;
+  }
+
+  body[data-background='particles'] .demo-surface {
+    background-color: hsl(var(--background) / 0.82);
+  }
+
+  body[data-background='dynamic'] {
+    --app-background-image: linear-gradient(135deg, rgba(236, 72, 153, 0.65), rgba(14, 165, 233, 0.55), rgba(59, 130, 246, 0.58));
+    background-size: 160% 160%;
+    animation: aurora-shift 30s ease-in-out infinite alternate;
+  }
+
+  body[data-background='dynamic'] .demo-surface {
+    background-color: hsl(var(--background) / 0.88);
+  }
+
+  @keyframes particle-drift {
+    0% {
+      background-position: 0% 0%;
+    }
+    50% {
+      background-position: 50% 50%;
+    }
+    100% {
+      background-position: 0% 100%;
+    }
+  }
+
+  @keyframes aurora-shift {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 50% 100%;
+    }
+    100% {
+      background-position: 100% 50%;
+    }
   }
 
   /* Modern card styles - override shadcn card backgrounds */
@@ -247,14 +316,24 @@
   /* Bento Grid Layouts */
   .bento-grid {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    grid-template-rows: repeat(12, minmax(120px, auto));
-    gap: 1rem;
+    gap: var(--zoom-gap, 1rem);
+    grid-auto-flow: dense;
+  }
+
+  .bento-grid-default {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-auto-rows: auto;
+  }
+
+  [data-profile="power"] .bento-grid-default {
+    grid-auto-rows: minmax(120px, auto);
   }
 
   .bento-grid-senior {
-    grid-template-rows: repeat(6, minmax(150px, auto));
-    gap: 1.5rem;
+    grid-template-columns: repeat(var(--zoom-grid-columns, 3), minmax(var(--zoom-card-min-width, 280px), 1fr));
+    grid-auto-rows: auto;
+    grid-auto-flow: row dense;
+    gap: var(--zoom-gap, 1.5rem);
   }
 
   /* Bento Grid Areas */
@@ -316,52 +395,99 @@
     grid-row: 11 / 12;
   }
 
+  .bento-fortune {
+    grid-column: 9 / 13;
+    grid-row: 11 / 12;
+  }
+
   /* Senior Mode Adjustments */
-  [data-profile="senior"] .bento-grid {
-    .bento-hero {
-      grid-row: 1 / 4;
-    }
-    
-    .bento-snippets {
-      grid-row: 4 / 7;
-    }
+  [data-profile="senior"] {
+    --scale: var(--senior-zoom, 1.2);
+    --contrast: 1.2;
+    --density: 0.85;
+    --motion: 0;
+  }
+
+  [data-profile="power"] {
+    --scale: 0.9;
+    --contrast: 0.95;
+    --density: 0.75;
+    --motion: 1;
+  }
+
+  .widget-draggable {
+    position: relative;
+    transition: var(--transition-smooth);
+    padding-top: 0.75rem;
+    padding-left: 0.75rem;
+  }
+
+  .widget-draggable.dragging {
+    opacity: 0.6;
+    outline: 2px dashed hsl(var(--primary));
+    outline-offset: 6px;
+  }
+
+  .widget-draggable.drop-target:not(.dragging)::after {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 1.5rem;
+    border: 2px dashed hsl(var(--primary));
+    pointer-events: none;
+    animation: pulse-glow 1.6s ease-in-out infinite;
+  }
+
+  .widget-handle {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    z-index: 5;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--background) / 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    backdrop-filter: blur(4px);
+  }
+
+  .widget-handle:active {
+    cursor: grabbing;
+  }
+
+  .widget-handle svg {
+    pointer-events: none;
   }
 
   /* Mobile Responsive */
   @media (max-width: 1024px) {
-    .bento-grid {
-      grid-template-columns: repeat(6, 1fr);
-      grid-template-rows: repeat(12, minmax(100px, auto));
+    .bento-grid,
+    .bento-grid-default,
+    .bento-grid-senior {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-auto-rows: minmax(120px, auto);
     }
 
-    .bento-hero {
-      grid-column: 1 / 7;
-      grid-row: 1 / 4;
+    .widget-draggable {
+      grid-column: span 6 !important;
+      grid-row: auto !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .bento-grid,
+    .bento-grid-default,
+    .bento-grid-senior {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+      grid-auto-rows: auto;
     }
 
-    .bento-digest {
-      grid-column: 1 / 7;
-      grid-row: 4 / 6;
-    }
-
-    .bento-patterns {
-      grid-column: 1 / 4;
-      grid-row: 6 / 9;
-    }
-
-    .bento-actions {
-      grid-column: 4 / 7;
-      grid-row: 6 / 8;
-    }
-
-    .bento-snippets {
-      grid-column: 1 / 7;
-      grid-row: 9 / 13;
-    }
-
-    .bento-weather {
-      grid-column: 4 / 7;
-      grid-row: 8 / 9;
+    .widget-draggable {
+      grid-column: span 1 !important;
     }
   }
 
@@ -382,12 +508,12 @@
     transition: all 0.3s ease-out;
   }
 
-  /* Credits Animation */
+  /* Lychees Animation */
   .credits-popup {
-    animation: credits-bounce 0.6s ease-out;
+    animation: lychees-bounce 0.6s ease-out;
   }
 
-  @keyframes credits-bounce {
+  @keyframes lychees-bounce {
     0% { transform: translateY(0) scale(1); opacity: 1; }
     50% { transform: translateY(-20px) scale(1.1); opacity: 1; }
     100% { transform: translateY(-40px) scale(0.9); opacity: 0; }
@@ -462,3 +588,28 @@
     }
   }
 }
+
+@keyframes particle-drift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 50% 50%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+@keyframes aurora-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+

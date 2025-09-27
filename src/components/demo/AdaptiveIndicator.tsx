@@ -25,6 +25,8 @@ interface AdaptationEvent {
   impact: 'high' | 'medium' | 'low';
 }
 
+const ADAPTATION_TYPES: AdaptationEvent['type'][] = ['layout', 'priority', 'content', 'timing', 'interface'];
+
 const mockAdaptations: AdaptationEvent[] = [
   {
     id: '1',
@@ -69,11 +71,12 @@ export function AdaptiveIndicator() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (Math.random() < 0.3) { // 30% chance every 10 seconds
+        const randomType = ADAPTATION_TYPES[Math.floor(Math.random() * ADAPTATION_TYPES.length)];
         const newAdaptation: AdaptationEvent = {
           id: Date.now().toString(),
-          type: ['layout', 'priority', 'content', 'timing'][Math.floor(Math.random() * 4)] as any,
+          type: randomType,
           title: 'Smart Adjustment',
-          description: 'Shapeshifter adapted to your workflow',
+          description: 'Bao OS adapted to your workflow',
           timestamp: new Date(),
           impact: 'medium'
         };
