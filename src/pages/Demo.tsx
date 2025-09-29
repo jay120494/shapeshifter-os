@@ -459,7 +459,7 @@ export default function Demo() {
       <SecondaryTabBar />
       <ZoomSlider />
       <VoiceMockup />
-      <Container size="full" className="py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <div
           className="space-y-6 transition-all duration-300"
           style={{
@@ -626,7 +626,7 @@ export default function Demo() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
 
       <CommandPalette />
 

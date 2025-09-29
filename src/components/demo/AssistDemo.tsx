@@ -7,13 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
-import { Wand2, HelpCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Wand2, HelpCircle, ArrowRight, Eye, EyeOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { usePrefsStore } from '@/store/prefsStore';
 
 export function AssistDemo() {
   const [assistEnabled, setAssistEnabled] = useState(false);
   const [currentField, setCurrentField] = useState(0);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { profile } = usePrefsStore();
 
   const fields = [
@@ -51,25 +52,38 @@ export function AssistDemo() {
 
   return (
     <div className="space-y-6">
-      {/* Demo Header */}
-      <Card className="border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50">
+      {/* Demo Header - Now Collapsible */}
+      <Card className="border-blue-200 bg-gradient-to-r from-blue-50 to-blue-100">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold flex items-center gap-2">
-              <Wand2 className="w-6 h-6 text-amber-600" />
-              Bao Assist Demo
-            </CardTitle>
-            <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-              Phase 2 Preview
-            </Badge>
+            <div className="flex items-center gap-2">
+              <CardTitle className="text-xl font-bold flex items-center gap-2 text-blue-800">
+                <Wand2 className="w-6 h-6 text-blue-600" />
+                Bao Assist Demo
+              </CardTitle>
+              <Badge variant="secondary" className="bg-blue-200 text-blue-800">
+                Phase 2 Preview
+              </Badge>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+              className="h-8 w-8 p-0 text-blue-700 hover:text-blue-900 hover:bg-blue-200"
+            >
+              {isCollapsed ? <ChevronDown className="w-5 h-5" /> : <ChevronUp className="w-5 h-5" />}
+            </Button>
           </div>
-          <p className="text-muted-foreground">
+          <p className="text-blue-700">
             Experience how AI can adapt interfaces for better accessibility and usability
           </p>
         </CardHeader>
       </Card>
 
-      {/* Control Panel */}
+      {/* Collapsible Content */}
+      {!isCollapsed && (
+        <>
+          {/* Control Panel */}
       <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
         <div className="flex items-center gap-4">
           <Button
@@ -283,6 +297,8 @@ export function AssistDemo() {
           )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
